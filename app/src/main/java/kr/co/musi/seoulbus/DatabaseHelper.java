@@ -54,6 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "primary key('busrouteid') )";
         sqLiteDatabase.execSQL(sql);
 
+        initializeTable();
     }
 
     @Override
@@ -67,5 +68,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             onCreate(sqLiteDatabase);
         }
+    }
+
+    private void initializeTable() {
+        //insert data into routeinfo table
+
+        return ;
     }
 }

@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,12 +44,28 @@ public class Sqlite {
         database.close();
     }
 
-    public static void insertRouteInfo(Context context) {
+    public static void insertRouteInfo(Context context)  {
         if (database == null) openDataBase(context);
 
         if (database != null) {
-            //routeinfo.csv 파일을 열어서 DB에 저장한다.
 
+            //routeinfo.csv 파일을 열어서 DB에 저장한다.
+            try {
+                BufferedReader reader = null;
+                reader = new BufferedReader(
+                        new FileReader("c:\\android\\seoulbus\\doc\\routeinfo.csv")
+                );
+                String str;
+                while((str = reader.readLine()) != null) {
+                    System.out.println(str);
+                }
+                reader.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+/*
             String latitude = Double.toString(intent.getDoubleExtra("latitude", 0.0));
             String longitude = Double.toString(intent.getDoubleExtra("longitude", 0.0));
             String keepgoing = intent.getStringExtra("keepgoing");
@@ -61,7 +82,7 @@ public class Sqlite {
             String sql = "insert into busloc(latitude, longitude, keepgoing, notidate, gpsreturncnt, batterypct, reqcnt, accuracy, busstopno) "+
                     "values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
             Object[] params = {latitude, longitude, keepgoing, notiDate, gpsReturnCnt, batteryPct, maxReturnCnt, accuracy, busstopno};
-            database.execSQL(sql, params);
+            database.execSQL(sql, params);*/
         }
     }
 

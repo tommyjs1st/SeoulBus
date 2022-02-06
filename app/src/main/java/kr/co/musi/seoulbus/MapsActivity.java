@@ -1,6 +1,8 @@
 package kr.co.musi.seoulbus;
 
 import androidx.fragment.app.FragmentActivity;
+
+import android.content.Context;
 import android.os.Bundle;
 
 import com.naver.maps.geometry.LatLng;
@@ -18,6 +20,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private NaverMap mMap;
     private Marker marker;
     private ActivityMapsBinding binding;
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +28,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        MapsActivity.context = getApplicationContext();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         MapFragment mapFragment = (MapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
+    Sqlite.insertRouteInfo(MapsActivity.context);
 
     /**
      * Manipulates the map once available.
