@@ -45,6 +45,7 @@ public class Sqlite {
     }
 
     public static void insertRouteInfo(Context context)  {
+        String useYn = "Y";
         if (database == null) openDataBase(context);
 
         if (database != null) {
@@ -57,7 +58,12 @@ public class Sqlite {
                 );
                 String str;
                 while((str = reader.readLine()) != null) {
-                    System.out.println(str);
+                    String[] values = str.split(",");
+                    System.out.println(str+":"+values[0]+","+values[1]);
+                    String sql = "insert into routeinfo(routeid, routenm, useyn) "+
+                            "values(?, ?, ?)";
+                    Object[] params = {values[1], values[0], useYn};
+                    database.execSQL(sql, params);
                 }
                 reader.close();
             } catch (FileNotFoundException e) {
@@ -65,56 +71,24 @@ public class Sqlite {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-/*
-            String latitude = Double.toString(intent.getDoubleExtra("latitude", 0.0));
-            String longitude = Double.toString(intent.getDoubleExtra("longitude", 0.0));
-            String keepgoing = intent.getStringExtra("keepgoing");
-            String gpsReturnCnt = Integer.toString(intent.getIntExtra("gpsreturncnt", 0));
-            String maxReturnCnt = Integer.toString(intent.getIntExtra("maxreturncnt", 0));
-            String notiDate = intent.getStringExtra("notidate");
-            String batteryPct = Integer.toString(intent.getIntExtra("batterypct", 0));
-            String accuracy = Float.toString(intent.getFloatExtra("accuracy", 0));
-
-            String busstopno = "";
-
-            notiDate = notiDate.replaceAll("/", "-");
-
-            String sql = "insert into busloc(latitude, longitude, keepgoing, notidate, gpsreturncnt, batterypct, reqcnt, accuracy, busstopno) "+
-                    "values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            Object[] params = {latitude, longitude, keepgoing, notiDate, gpsReturnCnt, batteryPct, maxReturnCnt, accuracy, busstopno};
-            database.execSQL(sql, params);*/
         }
     }
 
-    public static int deleteOldData(int days) {
+    public static int deleteAllRouteInfo() {
 
-        if (days >= 0) days = maxSaveTerm;
         if (database != null) {
             try {
-                String sql = "delete from busloc where notidate < datetime(datetime('now','localtime'), ? ||' days')";
-                String[] params = {String.valueOf(days)};
-                database.execSQL(sql, params);
+                String sql = "delete from routeinfo";
+                database.execSQL(sql);
             } catch (Exception e) {
                 e.printStackTrace();
                 return  -1;
             }
         } else {
-            Log.e(TAG, "deleteOldData:database not opened.");
+            Log.e(TAG, "deleteAllRouteInfo:database not opened.");
             return  -1;
         }
         return 0;
     }
-
-    public static void deleteDataAll() {
-
-        if (database != null) {
-            String sql = "delete from busloc";
-            database.execSQL(sql);
-        } else {
-            Log.e(TAG, "deleteDataAll:database not opened.");
-        }
-        return ;
-    }
-
 
 }
