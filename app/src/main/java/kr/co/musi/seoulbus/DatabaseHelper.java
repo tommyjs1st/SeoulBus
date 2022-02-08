@@ -9,9 +9,11 @@ import androidx.annotation.Nullable;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DBH";
+    Context mContext;
 
     public DatabaseHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
+        mContext = context;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         sql = "create table if not exists routepath ( " +
                 "busrouteid varchar," +
-                "no int," +
+                "num int," +
                 "gpsX varchar," +
                 "gpsY varchar," +
                 "primary key('busrouteid') )";
@@ -60,11 +62,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
 
-        if (oldVersion < 0) {
+        String sqlStr = "";
+        if (oldVersion < 1) {
             String tableName = "";
             for (int cnt =0; cnt < Sqlite.arrTableList.length; cnt++ ) {
                 tableName = Sqlite.arrTableList[cnt];
-                sqLiteDatabase.execSQL("drop table if exists " + tableName);
+                sqlStr = new StringBuilder().append("drop table if exists ").append(tableName).toString();
+                sqLiteDatabase.execSQL(sqlStr);
             }
             onCreate(sqLiteDatabase);
         }
@@ -72,7 +76,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void initializeTable() {
         //insert data into routeinfo table
-
+        Sqlite.insertRouteInfo(mContext);
         return ;
     }
 }

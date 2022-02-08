@@ -1,0 +1,169 @@
+package kr.co.musi.seoulbus;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+public class StaionsByRouteList {
+    static Context mContext;
+    public StaionsByRouteList(Context context) {
+        mContext = context;
+    }
+
+    public static int saveStaionsByRouteList(String routeid) {
+
+        BufferedReader in = null;
+        StringBuffer strBuffer = new StringBuffer();
+
+        try {
+
+            String servieId = "getStaionByRoute";
+            String urlStr = Util.urlBusRoute + servieId;
+            urlStr += "?ServiceKey="+Util.serviceKey;
+            urlStr += "&busRouteId="+routeid;
+            urlStr += "&resultType=xml";
+            System.out.println(urlStr);
+
+            URL obj = new URL(urlStr);
+            HttpURLConnection con = (HttpURLConnection)obj.openConnection();
+            con.setRequestMethod("GET");
+
+            in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+
+            String line;
+            while((line = in.readLine()) != null) {
+                System.out.println(line);
+                strBuffer.append(line);
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(in != null) try { in.close(); } catch(Exception e) { e.printStackTrace(); }
+        }
+        int saveCnt = insertRoutePathList(strBuffer);
+        return saveCnt;
+    }
+
+    private static int insertRoutePathList(StringBuffer strBuffer) {
+        // XML Parsing + db insert
+
+        SQLiteDatabase database = null;
+        String busRouteId = "";
+        String seq = "";
+        String busRouteNm = "";
+        String section = "";
+        String station = "";
+        String stationNm = "";
+        String gpsX = "";
+        String gpsY = "";
+        String direction = "";
+        String fullSectDist = "";
+        String stationNo = "";
+        String routeType = "";
+        String beginTm = "";
+        String lastTm = "";
+        String trnstnId = "";
+        String sectSpd = "";
+        String arsId = "";
+        String transYn = "";
+        int saveCnt = 0;
+        System.out.println(busRouteId+","+seq+","+busRouteNm+","+stationNm);
+
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            InputStream istream = new ByteArrayInputStream(strBuffer.toString().getBytes("utf-8"));
+            org.w3c.dom.Document doc = dBuilder.parse(istream);
+            doc.getDocumentElement().normalize();
+
+            NodeList nList = doc.getElementsByTagName("itemList");
+
+            database = Sqlite.getDatabase(mContext);
+            String sqlStr = "INSERT INTO routeStationPath (busrouteid, seq, busRouteNm, section, station, stationNm, gpsX, gpsY"
+                    + ",direction, fullSectDist, stationNo, routeType, beginTm, lastTm, trnstnId, sectSpd, arsId, transYn)"
+                    + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            SQLiteStatement statement = database.compileStatement(sqlStr);
+            database.beginTransaction();
+
+            for (int nCnt = 0; nCnt < nList.getLength(); nCnt++) {
+                Node nNode = nList.item(nCnt);
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+
+                    busRouteId = eElement.getElementsByTagName("busRouteId") .item(0).getTextContent();
+                    seq = eElement.getElementsByTagName("seq") .item(0).getTextContent();
+                    busRouteNm = eElement.getElementsByTagName("busRouteNm") .item(0).getTextContent();
+                    section = eElement.getElementsByTagName("section") .item(0).getTextContent();
+                    station = eElement.getElementsByTagName("station") .item(0).getTextContent();
+                    stationNm = eElement.getElementsByTagName("stationNm") .item(0).getTextContent();
+                    gpsX = eElement.getElementsByTagName("gpsX") .item(0).getTextContent();
+                    gpsY = eElement.getElementsByTagName("gpsY") .item(0).getTextContent();
+                    direction = eElement.getElementsByTagName("direction") .item(0).getTextContent();
+                    fullSectDist = eElement.getElementsByTagName("fullSectDist") .item(0).getTextContent();
+                    stationNo = eElement.getElementsByTagName("stationNo") .item(0).getTextContent();
+                    routeType = eElement.getElementsByTagName("routeType") .item(0).getTextContent();
+                    beginTm = eElement.getElementsByTagName("beginTm") .item(0).getTextContent();
+                    lastTm = eElement.getElementsByTagName("lastTm") .item(0).getTextContent();
+                    trnstnId = eElement.getElementsByTagName("trnstnid") .item(0).getTextContent();
+                    sectSpd = eElement.getElementsByTagName("sectSpd") .item(0).getTextContent();
+                    arsId = eElement.getElementsByTagName("arsId") .item(0).getTextContent();
+                    transYn = eElement.getElementsByTagName("transYn") .item(0).getTextContent();
+                    System.out.println(busRouteId+","+seq+","+busRouteNm+","+stationNm);
+                    try {
+                        Integer.parseInt(stationNo);
+                    } catch(NumberFormatException e) {
+                        stationNo = "0";
+                    }
+
+                    statement.clearBindings();
+                    statement.bindString(1, busRouteId);
+                    statement.bindLong(2, Long.parseLong(seq));
+                    statement.bindString(3, busRouteNm);
+                    statement.bindString(4, section);
+                    statement.bindString(5, station);
+                    statement.bindString(6, stationNm);
+                    statement.bindString(7, gpsX);
+                    statement.bindString(8, gpsY);
+                    statement.bindString(9, direction);
+                    statement.bindLong(10, Long.parseLong(fullSectDist));
+                    statement.bindLong(11, Long.parseLong(stationNo));
+                    statement.bindLong(12, Long.parseLong(routeType));
+                    statement.bindString(13, beginTm);
+                    statement.bindString(14, lastTm);
+                    statement.bindString(15, trnstnId);
+                    statement.bindLong(16, Long.parseLong(sectSpd));
+                    statement.bindString(17, arsId);
+                    statement.bindString(18, transYn);
+                    statement.execute();
+                }
+                if (nCnt%500 ==0) database.setTransactionSuccessful();
+                saveCnt ++;
+            }
+            database.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            database.endTransaction();
+        }
+        return saveCnt;
+    }
+}
