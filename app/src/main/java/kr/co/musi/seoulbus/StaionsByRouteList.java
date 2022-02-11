@@ -25,6 +25,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+
+/* 참고할 것 : https://mailmail.tistory.com/13*/
 public class StaionsByRouteList extends Activity {
     static Context mContext;
     public StaionsByRouteList(Context context) {
