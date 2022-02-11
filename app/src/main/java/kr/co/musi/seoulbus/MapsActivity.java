@@ -3,7 +3,9 @@ package kr.co.musi.seoulbus;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +24,7 @@ import kr.co.musi.seoulbus.databinding.ActivityMapsBinding;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static String TAG = "MapsActivity";
     private NaverMap mMap;
     private Marker marker;
     private ActivityMapsBinding binding;
@@ -66,17 +69,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         naverMap.moveCamera(cameraUpdate);
     }
     private void displayBusStop(String busNo) {
+        SQLiteDatabase database = Sqlite.openDataBase(mContext);
+        if (database == null) {
+            System.out.println("Database open error!");
+            return;
+        }
+        if (Sqlite.countRouteinfo() == 0) {
+            Sqlite.insertRouteInfo(mContext);
+        }
         String busRouteId = Sqlite.getBusRouteId(busNo);
-        StaionsByRouteList staionsByRouteList = new StaionsByRouteList(mContext);
 
         //if not exist, get a xml data and save in database
         if (Sqlite.countRoutePath(busRouteId) == 0) {
+            StaionsByRouteList staionsByRouteList = new StaionsByRouteList(mContext);
             int saveCnt = staionsByRouteList.saveStaionsByRouteList(busRouteId);
+            if (saveCnt < 0) {
+                Log.e(TAG, "saveStaionsByRouteList Error!!");
+                return;
+            }
+        } else {
+            // read Data from database
+            ArrayList<StationByRoute> listStationByRoute;
+            listStationByRoute = Sqlite.selectStationByRouteList(mContext, busRouteId);
         }
-        // read Data from database
-        ArrayList<StationByRoute> listStationByRoute;
-        listStationByRoute = Sqlite.selectStationByRoute(mContext, busRouteId);
-
 
     }
 }

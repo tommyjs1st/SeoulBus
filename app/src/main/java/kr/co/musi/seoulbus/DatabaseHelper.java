@@ -18,6 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        Log.d(TAG, "onCreated:");
         String sql = "";
         sql = "create table if not exists routeinfo ( " +
                 "routeid varchar," +
@@ -56,6 +57,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "primary key('busrouteid') )";
         sqLiteDatabase.execSQL(sql);
 
+        Log.d(TAG, "tables are created.");
+
         initializeTable();
     }
 
@@ -75,8 +78,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void initializeTable() {
+        Log.d(TAG, "initializeTable:");
+
         //insert data into routeinfo table
         Sqlite.insertRouteInfo(mContext);
-        return ;
     }
 }

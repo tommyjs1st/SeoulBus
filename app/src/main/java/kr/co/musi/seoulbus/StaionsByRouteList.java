@@ -1,8 +1,14 @@
 package kr.co.musi.seoulbus;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+
+import androidx.annotation.NonNull;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -10,11 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,7 +25,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class StaionsByRouteList {
+public class StaionsByRouteList extends Activity {
     static Context mContext;
     public StaionsByRouteList(Context context) {
         mContext = context;
@@ -31,6 +33,32 @@ public class StaionsByRouteList {
 
     public static int saveStaionsByRouteList(String routeid) {
 
+        StringBuffer strBuffer = new StringBuffer();
+
+        new Thread(new Runnable() {
+            public void run() {
+                String strData = getStaionsByRouteList(routeid);
+
+                Bundle bun = new Bundle();
+                bun.putString("HTML_DATA", strData);
+
+                Message msg = handler.obtainMessage();
+                msg.setData(bun);
+                handler.sendMessage(msg);
+            }
+
+            private final Handler handler = new Handler() {
+                public void handleMessage(Message msg) {
+                    String htmlData = msg.getData().getString("HTML_DATA");
+                    int saveCnt = insertRoutePathList(htmlData);
+
+                }
+            };
+        }).start();
+        return 0;
+    }
+
+    private static String getStaionsByRouteList(String routeid) {
         BufferedReader in = null;
         StringBuffer strBuffer = new StringBuffer();
 
@@ -44,10 +72,10 @@ public class StaionsByRouteList {
             System.out.println(urlStr);
 
             URL obj = new URL(urlStr);
-            HttpURLConnection con = (HttpURLConnection)obj.openConnection();
-            con.setRequestMethod("GET");
+            HttpURLConnection conn = (HttpURLConnection)obj.openConnection();
+            conn.setRequestMethod("GET");
 
-            in = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 
             String line;
             while((line = in.readLine()) != null) {
@@ -59,12 +87,12 @@ public class StaionsByRouteList {
         } finally {
             if(in != null) try { in.close(); } catch(Exception e) { e.printStackTrace(); }
         }
-        int saveCnt = insertRoutePathList(strBuffer);
-        return saveCnt;
+        return strBuffer.toString();
     }
 
-    private static int insertRoutePathList(StringBuffer strBuffer) {
+    private static int insertRoutePathList(String htmlData) {
         // XML Parsing + db insert
+        if (htmlData.length() == 0) return -1;
 
         SQLiteDatabase database = null;
         String busRouteId = "";
@@ -91,7 +119,7 @@ public class StaionsByRouteList {
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            InputStream istream = new ByteArrayInputStream(strBuffer.toString().getBytes("utf-8"));
+            InputStream istream = new ByteArrayInputStream(htmlData.getBytes("utf-8"));
             org.w3c.dom.Document doc = dBuilder.parse(istream);
             doc.getDocumentElement().normalize();
 

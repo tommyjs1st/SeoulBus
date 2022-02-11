@@ -26,7 +26,6 @@ public class Sqlite {
         DatabaseHelper helper = new DatabaseHelper(context, databaseName, null, version);
         try {
             database = helper.getWritableDatabase();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,6 +41,7 @@ public class Sqlite {
     }
 
     public static void insertRouteInfo(Context context)  {
+        Log.d(TAG,"Sqlite.insertRouteInfo");
         String useYn = "Y";
         String routenm = "";
         String routeid = "";
@@ -53,10 +53,10 @@ public class Sqlite {
                 for(int i=0;i< Util.arrRouteInfo.length;i++) {
                     routenm = Util.arrRouteInfo[i][0];
                     routeid = Util.arrRouteInfo[i][1];
-                    System.out.println(routeid+","+routenm);
                     String sql = "insert into routeinfo(routeid, routenm, useyn)  values(?, ?, ?)";
                     Object[] params = {routeid, routenm, useYn};
                     database.execSQL(sql, params);
+                    Log.d(TAG, routeid+","+routenm);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -82,11 +82,24 @@ public class Sqlite {
     }
 
     @SuppressLint("Range")
-    public static String getBusRouteId(String routeNm) {
-        if (database == null) {
-            System.out.println("The database is not opened.");
-            return "";
+    public static int countRouteinfo() {
+        if (database == null) return -1;
+        int rowCnt = 0;
+
+        String sqlStr = "";
+        sqlStr  = "select count(*) cnt ";
+        sqlStr += "from   routeinfo ";
+        Cursor cursor = database.rawQuery(sqlStr, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            rowCnt = cursor.getInt(cursor.getColumnIndex("cnt"));
         }
+        cursor.close();
+        return rowCnt;
+    }
+
+    @SuppressLint("Range")
+    public static String getBusRouteId(String routeNm) {
+        if (database == null) return "";
         String BusRouteId = "";
 
         String sqlStr = "";
@@ -95,7 +108,7 @@ public class Sqlite {
         sqlStr += "where  routenm = ?";
         String[] args = {routeNm};
         Cursor cursor = database.rawQuery(sqlStr, args);
-        if (cursor != null && cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToNext()) {
             BusRouteId = cursor.getString(cursor.getColumnIndex("routeid"));
         }
         cursor.close();
@@ -104,16 +117,13 @@ public class Sqlite {
 
     @SuppressLint("Range")
     public static int countRoutePath(String busrouteid) {
-        if (database == null) {
-            System.out.println("The database is not opened.");
-            return -1;
-        }
+        if (database == null) return -1;
         int rowCnt = 0;
 
         String sqlStr = "";
-        sqlStr  = "select count(*) cnt";
+        sqlStr  = "select count(*) cnt ";
         sqlStr += "from   routestationpath ";
-        sqlStr += "where  busrouteid = ?";
+        sqlStr += "where  busrouteid = ? ";
         String[] args = {busrouteid};
         Cursor cursor = database.rawQuery(sqlStr, args);
         if (cursor != null && cursor.moveToFirst()) {
@@ -123,7 +133,7 @@ public class Sqlite {
         return rowCnt;
     }
 
-    public static ArrayList<StationByRoute> selectStationByRoute(Context context, String busRouteId) {
+    public static ArrayList<StationByRoute> selectStationByRouteList(Context context, String busRouteId) {
 
         ArrayList<StationByRoute> listStationByRoute = new ArrayList<StationByRoute>();
         StationByRoute stationByRoute;
@@ -146,7 +156,7 @@ public class Sqlite {
         String arsId = "";
         String transYn = "";
 
-        database = getDatabase(context);
+        if (database == null) return null;
 
         String sqlStr = "";
         sqlStr  = "select count(*) cnt";
@@ -158,10 +168,9 @@ public class Sqlite {
         Cursor cursor = database.rawQuery(sqlStr, args);
         if (cursor != null && cursor.moveToNext()) {
             do {
-                @SuppressLint("Range")
-                seq  = cursor.getColumnIndex("seq");
+                //seq  = cursor.getColumnIndex("seq");
             } while(cursor.moveToNext());
-            stationByRoute = new StationByRoute(busRouteId, seq, busRouteNm, section, station, stationNm, gpsX, gpsY, direction, fullSectDist, stationNo, routeType, beginTm, lastTm, trnstnId, sectSpd, arsId, transYn)
+            stationByRoute = new StationByRoute(busRouteId, seq, busRouteNm, section, station, stationNm, gpsX, gpsY, direction, fullSectDist, stationNo, routeType, beginTm, lastTm, trnstnId, sectSpd, arsId, transYn);
             listStationByRoute.add(stationByRoute);
         }
         cursor.close();

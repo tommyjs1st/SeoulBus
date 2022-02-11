@@ -636,15 +636,7 @@ public class Util {
                     {"중랑02","106900002"}
             };
 
-
-
-    static final String mysqlHost = "192.168.0.50";
-    static final String mysqlPort = "3306";
-    static final String mysqlSid = "accountbook";
-    static final String mysqlId = "abuser";
-    static final String mysqlPw = "sj4430";
-    static final String mysqlDriver = "com.mysql.cj.jdbc.Driver";
     static final String serviceKey = "qiExR1Lgwdx5aZBQnFvwXEG2T17LjnzyT1lynMRZiyTwDdsHjohgl3FirBGWc9Tayx5DhOodgXaHWjpheMZpCQ%3D%3D";
-    static String urlBusRoute = "http://ws.bus.go.kr/api/rest/busRouteInfo/";
+    static final String urlBusRoute = "http://ws.bus.go.kr/api/rest/busRouteInfo/";
 
 }
