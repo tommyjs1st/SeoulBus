@@ -41,7 +41,7 @@ public class Sqlite {
     }
 
     public static void insertRouteInfo(Context context)  {
-        Log.d(TAG,"Sqlite.insertRouteInfo");
+        Log.d(TAG,"Sqlite.insertRouteInfo:");
         String useYn = "Y";
         String routenm = "";
         String routeid = "";
@@ -56,7 +56,7 @@ public class Sqlite {
                     String sql = "insert into routeinfo(routeid, routenm, useyn)  values(?, ?, ?)";
                     Object[] params = {routeid, routenm, useYn};
                     database.execSQL(sql, params);
-                    Log.d(TAG, routeid+","+routenm);
+                    //Log.d(TAG, routeid+","+routenm);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -134,46 +134,48 @@ public class Sqlite {
     }
 
     public static ArrayList<StationByRoute> selectStationByRouteList(Context context, String busRouteId) {
-
+        Log.d(TAG, "selectStationByRouteList:busRouteId["+busRouteId+"]");
         ArrayList<StationByRoute> listStationByRoute = new ArrayList<StationByRoute>();
         StationByRoute stationByRoute;
-
-        String seq = "";
-        String busRouteNm = "";
-        String section = "";
-        String station = "";
-        String stationNm = "";
-        String gpsX = "";
-        String gpsY = "";
-        String direction = "";
-        String fullSectDist = "";
-        String stationNo = "";
-        String routeType = "";
-        String beginTm = "";
-        String lastTm = "";
-        String trnstnId = "";
-        String sectSpd = "";
-        String arsId = "";
-        String transYn = "";
 
         if (database == null) return null;
 
         String sqlStr = "";
-        sqlStr  = "select count(*) cnt";
+        sqlStr  = "select busrouteid, seq, busroutenm, section, station, stationnm, gpsx, " +
+                         "gpsy, direction, fullsectdist,  stationno, routetype, begintm, " +
+                         "lasttm, trnstnid, sectspd, arsid, transyn ";
         sqlStr += "from   routeStationPath ";
-        sqlStr += "where  busrouteid = ?";
+        sqlStr += "where  busrouteid = ? ";
         String[] args = {busRouteId};
-
 
         Cursor cursor = database.rawQuery(sqlStr, args);
         if (cursor != null && cursor.moveToNext()) {
             do {
-                //seq  = cursor.getColumnIndex("seq");
+                stationByRoute = new StationByRoute(
+                        busRouteId,
+                        cursor.getInt(cursor.getColumnIndex("seq")),
+                        cursor.getString(cursor.getColumnIndex("busroutenm")),
+                        cursor.getString(cursor.getColumnIndex("section")),
+                        cursor.getString(cursor.getColumnIndex("station")),
+                        cursor.getString(cursor.getColumnIndex("stationnm")),
+                        cursor.getString(cursor.getColumnIndex("gpsx")),
+                        cursor.getString(cursor.getColumnIndex("gpsy")),
+                        cursor.getString(cursor.getColumnIndex("direction")),
+                        cursor.getInt(cursor.getColumnIndex("fullsectdist")),
+                        cursor.getInt(cursor.getColumnIndex("stationno")),
+                        cursor.getInt(cursor.getColumnIndex("routetype")),
+                        cursor.getString(cursor.getColumnIndex("begintm")),
+                        cursor.getString(cursor.getColumnIndex("lasttm")),
+                        cursor.getString(cursor.getColumnIndex("trnstnid")),
+                        cursor.getInt(cursor.getColumnIndex("sectspd")),
+                        cursor.getString(cursor.getColumnIndex("arsid")),
+                        cursor.getString(cursor.getColumnIndex("transyn")));
+                listStationByRoute.add(stationByRoute);
+                //Log.d(TAG, stationByRoute.toString());
             } while(cursor.moveToNext());
-            stationByRoute = new StationByRoute(busRouteId, seq, busRouteNm, section, station, stationNm, gpsX, gpsY, direction, fullSectDist, stationNo, routeType, beginTm, lastTm, trnstnId, sectSpd, arsId, transYn);
-            listStationByRoute.add(stationByRoute);
         }
         cursor.close();
+        //Log.d(TAG, "count of listStationByRoute is " + listStationByRoute.size());
 
         return listStationByRoute;
     }

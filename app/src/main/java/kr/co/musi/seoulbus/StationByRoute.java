@@ -3,7 +3,7 @@ package kr.co.musi.seoulbus;
 public class StationByRoute {
 
     String busRouteId = "";
-    String seq = "";
+    int seq = 0;
     String busRouteNm = "";
     String section = "";
     String station = "";
@@ -11,17 +11,17 @@ public class StationByRoute {
     String gpsX = "";
     String gpsY = "";
     String direction = "";
-    String fullSectDist = "";
-    String stationNo = "";
-    String routeType = "";
+    int fullSectDist = 0;
+    int stationNo = 0;
+    int routeType = 0;
     String beginTm = "";
     String lastTm = "";
     String trnstnId = "";
-    String sectSpd = "";
+    int sectSpd = 0;
     String arsId = "";
     String transYn = "";
 
-    public StationByRoute(String busRouteId, String seq, String busRouteNm, String section, String station, String stationNm, String gpsX, String gpsY, String direction, String fullSectDist, String stationNo, String routeType, String beginTm, String lastTm, String trnstnId, String sectSpd, String arsId, String transYn) {
+    public StationByRoute(String busRouteId, int seq, String busRouteNm, String section, String station, String stationNm, String gpsX, String gpsY, String direction, int fullSectDist, int stationNo, int routeType, String beginTm, String lastTm, String trnstnId, int sectSpd, String arsId, String transYn) {
         this.busRouteId = busRouteId;
         this.seq = seq;
         this.busRouteNm = busRouteNm;
@@ -42,6 +42,7 @@ public class StationByRoute {
         this.transYn = transYn;
     }
 
+
     public String getBusRouteId() {
         return busRouteId;
     }
@@ -50,11 +51,11 @@ public class StationByRoute {
         this.busRouteId = busRouteId;
     }
 
-    public String getSeq() {
+    public int getSeq() {
         return seq;
     }
 
-    public void setSeq(String seq) {
+    public void setSeq(int seq) {
         this.seq = seq;
     }
 
@@ -114,27 +115,27 @@ public class StationByRoute {
         this.direction = direction;
     }
 
-    public String getFullSectDist() {
+    public int getFullSectDist() {
         return fullSectDist;
     }
 
-    public void setFullSectDist(String fullSectDist) {
+    public void setFullSectDist(int fullSectDist) {
         this.fullSectDist = fullSectDist;
     }
 
-    public String getStationNo() {
+    public int getStationNo() {
         return stationNo;
     }
 
-    public void setStationNo(String stationNo) {
+    public void setStationNo(int stationNo) {
         this.stationNo = stationNo;
     }
 
-    public String getRouteType() {
+    public int getRouteType() {
         return routeType;
     }
 
-    public void setRouteType(String routeType) {
+    public void setRouteType(int routeType) {
         this.routeType = routeType;
     }
 
@@ -162,11 +163,11 @@ public class StationByRoute {
         this.trnstnId = trnstnId;
     }
 
-    public String getSectSpd() {
+    public int getSectSpd() {
         return sectSpd;
     }
 
-    public void setSectSpd(String sectSpd) {
+    public void setSectSpd(int sectSpd) {
         this.sectSpd = sectSpd;
     }
 
@@ -191,7 +192,7 @@ public class StationByRoute {
     public String toString() {
         return "StationByRoute{" +
                 "busRouteId='" + busRouteId + '\'' +
-                ", seq='" + seq + '\'' +
+                ", seq=" + String.valueOf(seq) +
                 ", busRouteNm='" + busRouteNm + '\'' +
                 ", section='" + section + '\'' +
                 ", station='" + station + '\'' +

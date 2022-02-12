@@ -1,6 +1,10 @@
 package kr.co.musi.seoulbus;
 
+import java.util.ArrayList;
+
 public class Util {
+    public static String busRouteId = "";
+    public static ArrayList<StationByRoute> listStationByRoute;
     public final static String[][] arrRouteInfo =
             {
                     {"0017","100100124"},

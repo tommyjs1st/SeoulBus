@@ -29,6 +29,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker marker;
     private ActivityMapsBinding binding;
     private Context mContext;
+    private StaionsByRouteList staionsByRouteList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,19 +79,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Sqlite.insertRouteInfo(mContext);
         }
         String busRouteId = Sqlite.getBusRouteId(busNo);
+        Util.busRouteId = busRouteId;
 
         //if not exist, get a xml data and save in database
         if (Sqlite.countRoutePath(busRouteId) == 0) {
-            StaionsByRouteList staionsByRouteList = new StaionsByRouteList(mContext);
+            String servieId = "getStaionByRoute";
+            String urlStr = Util.urlBusRoute + servieId;
+            urlStr += "?ServiceKey="+Util.serviceKey;
+            urlStr += "&busRouteId="+busRouteId;
+            urlStr += "&resultType=xml";
+            staionsByRouteList = new StaionsByRouteList(mContext);
             int saveCnt = staionsByRouteList.saveStaionsByRouteList(busRouteId);
-            if (saveCnt < 0) {
-                Log.e(TAG, "saveStaionsByRouteList Error!!");
-                return;
-            }
+
         } else {
             // read Data from database
-            ArrayList<StationByRoute> listStationByRoute;
-            listStationByRoute = Sqlite.selectStationByRouteList(mContext, busRouteId);
+            Util.listStationByRoute = Sqlite.selectStationByRouteList(mContext, busRouteId);
         }
 
     }

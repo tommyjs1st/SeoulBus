@@ -32,7 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "num int," +
                 "gpsX varchar," +
                 "gpsY varchar," +
-                "primary key('busrouteid') )";
+                "primary key('busrouteid', 'num') )";
         sqLiteDatabase.execSQL(sql);
 
         sql = "create table if not exists routestationpath ( " +
@@ -54,7 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "sectspd int," +
                 "arsid varchar," +
                 "transyn varchar," +
-                "primary key('busrouteid') )";
+                "primary key('busrouteid', 'seq') )";
         sqLiteDatabase.execSQL(sql);
 
         Log.d(TAG, "tables are created.");

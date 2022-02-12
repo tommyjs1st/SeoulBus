@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -27,13 +28,18 @@ import org.w3c.dom.NodeList;
 
 
 /* 참고할 것 : https://mailmail.tistory.com/13*/
-public class StaionsByRouteList extends Activity {
+public class StaionsByRouteList {
+    private static String TAG = "StaionsByRouteList";
     static Context mContext;
     public StaionsByRouteList(Context context) {
         mContext = context;
     }
 
-    public static int saveStaionsByRouteList(String routeid) {
+    public StaionsByRouteList() {
+
+    }
+
+    public int saveStaionsByRouteList(String routeid) {
 
         StringBuffer strBuffer = new StringBuffer();
 
@@ -53,15 +59,16 @@ public class StaionsByRouteList extends Activity {
                 public void handleMessage(Message msg) {
                     String htmlData = msg.getData().getString("HTML_DATA");
                     int saveCnt = insertRoutePathList(htmlData);
-
+                    if (saveCnt > 0) Util.listStationByRoute = Sqlite.selectStationByRouteList(mContext, Util.busRouteId);
                 }
             };
         }).start();
         return 0;
     }
 
-    private static String getStaionsByRouteList(String routeid) {
-        BufferedReader in = null;
+    private  String getStaionsByRouteList(String routeid) {
+
+        Log.d(TAG, "getStaionsByRouteList");
         StringBuffer strBuffer = new StringBuffer();
 
         try {
@@ -77,22 +84,25 @@ public class StaionsByRouteList extends Activity {
             HttpURLConnection conn = (HttpURLConnection)obj.openConnection();
             conn.setRequestMethod("GET");
 
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            int resCode = conn.getResponseCode();
+            if (resCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 
-            String line;
-            while((line = in.readLine()) != null) {
-                System.out.println(line);
-                strBuffer.append(line);
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    Log.d(TAG,line);
+                    strBuffer.append(line);
+                }
+                reader.close();
             }
+            conn.disconnect();
         } catch(Exception e) {
             e.printStackTrace();
-        } finally {
-            if(in != null) try { in.close(); } catch(Exception e) { e.printStackTrace(); }
         }
         return strBuffer.toString();
     }
 
-    private static int insertRoutePathList(String htmlData) {
+    public  int insertRoutePathList(String htmlData) {
         // XML Parsing + db insert
         if (htmlData.length() == 0) return -1;
 
