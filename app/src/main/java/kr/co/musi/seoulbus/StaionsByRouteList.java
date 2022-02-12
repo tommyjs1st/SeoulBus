@@ -35,10 +35,6 @@ public class StaionsByRouteList {
         mContext = context;
     }
 
-    public StaionsByRouteList() {
-
-    }
-
     public int saveStaionsByRouteList(String routeid) {
 
         StringBuffer strBuffer = new StringBuffer();
@@ -74,7 +70,7 @@ public class StaionsByRouteList {
         try {
 
             String servieId = "getStaionByRoute";
-            String urlStr = Util.urlBusRoute + servieId;
+            String urlStr = Util.urlBusStopInfo + servieId;
             urlStr += "?ServiceKey="+Util.serviceKey;
             urlStr += "&busRouteId="+routeid;
             urlStr += "&resultType=xml";
@@ -90,7 +86,7 @@ public class StaionsByRouteList {
 
                 String line = null;
                 while ((line = reader.readLine()) != null) {
-                    Log.d(TAG,line);
+                    //Log.d(TAG,line);
                     strBuffer.append(line);
                 }
                 reader.close();

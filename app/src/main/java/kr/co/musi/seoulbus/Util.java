@@ -4,7 +4,13 @@ import java.util.ArrayList;
 
 public class Util {
     public static String busRouteId = "";
-    public static ArrayList<StationByRoute> listStationByRoute;
+    public static ArrayList<StationByRoute> listStationByRoute; //정류장 목록
+    public static ArrayList<BusPosByRtid> listBusPosByRtid;     //운행중인 버스 목록
+
+    static final String serviceKey = "qiExR1Lgwdx5aZBQnFvwXEG2T17LjnzyT1lynMRZiyTwDdsHjohgl3FirBGWc9Tayx5DhOodgXaHWjpheMZpCQ%3D%3D";
+    static final String urlBusStopInfo = "http://ws.bus.go.kr/api/rest/busRouteInfo/";
+    static final String urlBusPostion = "http://ws.bus.go.kr/api/rest/buspos/";
+
     public final static String[][] arrRouteInfo =
             {
                     {"0017","100100124"},
@@ -640,7 +646,5 @@ public class Util {
                     {"중랑02","106900002"}
             };
 
-    static final String serviceKey = "qiExR1Lgwdx5aZBQnFvwXEG2T17LjnzyT1lynMRZiyTwDdsHjohgl3FirBGWc9Tayx5DhOodgXaHWjpheMZpCQ%3D%3D";
-    static final String urlBusRoute = "http://ws.bus.go.kr/api/rest/busRouteInfo/";
 
 }
