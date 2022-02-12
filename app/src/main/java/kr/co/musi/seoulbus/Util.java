@@ -1,11 +1,14 @@
 package kr.co.musi.seoulbus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Util {
     public static String busRouteId = "";
     public static ArrayList<StationByRoute> listStationByRoute; //정류장 목록
     public static ArrayList<BusPosByRtid> listBusPosByRtid;     //운행중인 버스 목록
+    public static String routeDirection = "";
 
     static final String serviceKey = "qiExR1Lgwdx5aZBQnFvwXEG2T17LjnzyT1lynMRZiyTwDdsHjohgl3FirBGWc9Tayx5DhOodgXaHWjpheMZpCQ%3D%3D";
     static final String urlBusStopInfo = "http://ws.bus.go.kr/api/rest/busRouteInfo/";

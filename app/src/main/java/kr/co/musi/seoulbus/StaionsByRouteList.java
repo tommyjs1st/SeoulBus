@@ -122,7 +122,7 @@ public class StaionsByRouteList {
         String arsId = "";
         String transYn = "";
         int saveCnt = 0;
-        System.out.println(busRouteId+","+seq+","+busRouteNm+","+stationNm);
+        //System.out.println(busRouteId+","+seq+","+busRouteNm+","+stationNm);
 
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -163,7 +163,7 @@ public class StaionsByRouteList {
                     sectSpd = eElement.getElementsByTagName("sectSpd") .item(0).getTextContent();
                     arsId = eElement.getElementsByTagName("arsId") .item(0).getTextContent();
                     transYn = eElement.getElementsByTagName("transYn") .item(0).getTextContent();
-                    System.out.println(busRouteId+","+seq+","+busRouteNm+","+stationNm);
+                    //Log.d(TAG, busRouteId+","+seq+","+busRouteNm+","+stationNm);
                     try {
                         Integer.parseInt(stationNo);
                     } catch(NumberFormatException e) {

@@ -245,4 +245,47 @@ public class BusPosByRtid {
                 ", nextStId='" + nextStId + '\'' +
                 '}';
     }
+
+    public String getIsLastYnNm() {
+        String lastYnNm = "";
+        if ("1".equals(isLastYn)) {
+            lastYnNm = ",막차";
+        }
+        return lastYnNm;
+    }
+    public String getIsFullFlagNm() {
+        String FullYnNm = "";
+        if ("1".equals(isFullFlag)) {
+            FullYnNm = ",만차";
+        }
+        return FullYnNm;
+    }
+    public String getisrunynNm() {
+        String isRunYnNm = ",운행종료";
+        if ("1".equals(isRunYn)) {
+            isRunYnNm = ",운행중";
+        }
+        return isRunYnNm;
+    }
+    public String getCongetionYn() {
+        String congetioinNm = "";
+        if ("3".equals(congetion)) {
+            congetioinNm = ",여유";
+        } else if ("4".equals(congetion)) {
+            congetioinNm = ",보통";
+        } else if ("5".equals(congetion)) {
+            congetioinNm = ",혼잡";
+        } else if ("6".equals(congetion)) {
+            congetioinNm = ",매우혼잡";
+        }
+        return congetioinNm;
+    }
+    public String getstopFlagNm() {
+        String stopFlagNm = ",운행중";
+        if ("1".equals(stopFlag)) {
+            stopFlagNm = ",도착";
+        }
+        return stopFlagNm;
+    }
+
 }

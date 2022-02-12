@@ -137,6 +137,7 @@ public class Sqlite {
         Log.d(TAG, "selectStationByRouteList:busRouteId["+busRouteId+"]");
         ArrayList<StationByRoute> listStationByRoute = new ArrayList<StationByRoute>();
         StationByRoute stationByRoute;
+        String direction = "";
 
         if (database == null) return null;
 
@@ -151,6 +152,9 @@ public class Sqlite {
         Cursor cursor = database.rawQuery(sqlStr, args);
         if (cursor != null && cursor.moveToNext()) {
             do {
+                direction = cursor.getString(cursor.getColumnIndex("direction"));
+                Util.routeDirection = direction;
+
                 stationByRoute = new StationByRoute(
                         busRouteId,
                         cursor.getInt(cursor.getColumnIndex("seq")),
