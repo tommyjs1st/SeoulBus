@@ -2,24 +2,24 @@ package kr.co.musi.seoulbus;
 
 public class StationByRoute {
 
-    String busRouteId = "";
-    int seq = 0;
-    String busRouteNm = "";
-    String section = "";
-    String station = "";
-    String stationNm = "";
-    String gpsX = "";
-    String gpsY = "";
-    String direction = "";
-    int fullSectDist = 0;
-    int stationNo = 0;
-    int routeType = 0;
-    String beginTm = "";
-    String lastTm = "";
-    String trnstnId = "";
-    int sectSpd = 0;
-    String arsId = "";
-    String transYn = "";
+    private String busRouteId = "";
+    private int seq = 0;
+    private String busRouteNm = "";
+    private String section = "";
+    private String station = "";
+    private String stationNm = "";
+    private String gpsX = "";
+    private String gpsY = "";
+    private String direction = "";
+    private int fullSectDist = 0;
+    private int stationNo = 0;
+    private int routeType = 0;
+    private String beginTm = "";
+    private String lastTm = "";
+    private String trnstnId = "";
+    private int sectSpd = 0;
+    private String arsId = "";
+    private String transYn = "";
 
     public StationByRoute(String busRouteId, int seq, String busRouteNm, String section, String station, String stationNm, String gpsX, String gpsY, String direction, int fullSectDist, int stationNo, int routeType, String beginTm, String lastTm, String trnstnId, int sectSpd, String arsId, String transYn) {
         this.busRouteId = busRouteId;

@@ -16,7 +16,9 @@ import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.overlay.Align;
 import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.util.MarkerIcons;
 
 import java.util.ArrayList;
 
@@ -50,7 +52,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayBusStop(edBusNo.getText().toString());
+                getBusStopInfo(edBusNo.getText().toString());
+                displayBusStop();
             }
         });
     }
@@ -69,7 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CameraUpdate cameraUpdate = CameraUpdate.scrollTo(kcycle).animate(CameraAnimation.Fly, 1000);
         naverMap.moveCamera(cameraUpdate);
     }
-    private void displayBusStop(String busNo) {
+    private void getBusStopInfo(String busNo) {
         SQLiteDatabase database = Sqlite.openDataBase(mContext);
         if (database == null) {
             System.out.println("Database open error!");
@@ -90,11 +93,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             urlStr += "&resultType=xml";
             staionsByRouteList = new StaionsByRouteList(mContext);
             int saveCnt = staionsByRouteList.saveStaionsByRouteList(busRouteId);
-
         } else {
             // read Data from database
             Util.listStationByRoute = Sqlite.selectStationByRouteList(mContext, busRouteId);
         }
 
+    }
+    private void displayBusStop() {
+        if (Util.listStationByRoute.size() == 0) return;
+
+        ArrayList<StationByRoute> listStationByRoute = Util.listStationByRoute;
+        //Marker[] busStopMarkers = new Marker[listStationByRoute.size()];
+
+        LatLng latLng = null;
+        for (int i=0;i<listStationByRoute.size();i++) {
+            latLng = new LatLng(Double.parseDouble(listStationByRoute.get(i).getGpsY()), Double.parseDouble(listStationByRoute.get(i).getGpsX()));
+            if (mMap != null) {
+                Marker marker = new Marker();
+                marker.setZIndex(i);
+                marker.setCaptionText(listStationByRoute.get(i).getStationNm());
+                marker.setCaptionTextSize(14);
+                marker.setCaptionAligns(Align.Top);
+                marker.setPosition(latLng);
+                marker.setIcon(MarkerIcons.BLUE);
+                marker.setMap(mMap);
+                Log.d(TAG, listStationByRoute.get(i).getStationNm());
+            }
+        }
+        CameraUpdate cameraUpdate = CameraUpdate.scrollTo(latLng).animate(CameraAnimation.Fly, 1000);
+        mMap.moveCamera(cameraUpdate);
     }
 }
